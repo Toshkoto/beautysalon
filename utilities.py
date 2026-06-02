@@ -1,11 +1,5 @@
 from datetime import time
 
-class Apointment:
-    def __init__(self, t: time, service_name: str = None, price: float = None, client: Client = None) -> None:
-        self.service_name = service_name
-        self.t = t
-        self.price = price
-        self.client = client
 
 class Client:
     def __init__(self, name: str, phone: str, points: int) -> None:
@@ -13,6 +7,13 @@ class Client:
         self.phone = phone
         self.points = points
         self.history: Stack[Apointment]
+
+class Apointment:
+    def __init__(self, t: time, service_name: str, price: float, client: Client) -> None:
+        self.service_name = service_name
+        self.t = t
+        self.price = price
+        self.client = client
 
 class DataStructure:
     def __init__(self) -> None:

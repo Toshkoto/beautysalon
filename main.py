@@ -1,4 +1,5 @@
 from utilities import *
+import random
 
 class SalonManager:
     def __init__(self) -> None:
@@ -7,7 +8,6 @@ class SalonManager:
         self.client_database: list[Client] = [
             # made with chatgpt 
             # murzel sum
-            """
             Client("Emma Johnson", "+359887102341", 120),
             Client("Olivia Smith", "+359888203452", 75),
             Client("Sophia Brown", "+359889304563", 230),
@@ -62,10 +62,17 @@ class SalonManager:
             Client("Allison Sanchez", "+359889849018", 60),
             Client("Madelyn Morris", "+359878950129", 98),
             Client("Ruby Rogers", "+359879051230", 145),
-            """
         ]
         self.non_app_client: Queue[Client] # clienti bez chas 
         self.reservations: list[Apointment]
+
+        service_prices = {
+            "facial": 30,
+            "hair care": 10,
+            "nails": 35,
+            "balding": 4,
+            "showering": 19
+        }
 
     def add_reservation(self, ap: Apointment) -> list:
         DURATION = 1
@@ -76,12 +83,12 @@ class SalonManager:
         if current_start < self.OPENING_TIME or current_end > self.CLOSING_TIME: return [r.t for r in self.reservations]
         if self.reservations is None:
             self.reservations.append(ap)
-            return [r.t for r in self.reservations]
+            return True
         
         # insert reservation at the start (first)
         if self.OPENING_TIME <= current_start and current_end <= self.reservations[0].t:
             self.reservations.insert(0, ap)
-            return [r.t for r in self.reservations]
+            return True
         
         # try to insert somewhere in the middle
         for i in range(1, len(self.reservations)):
@@ -90,14 +97,45 @@ class SalonManager:
             
             if prev_end <= current_start and current_end <= next_start:
                 self.reservations.insert(i, ap)
-
+                return True
 
         # insert reservation at the end (last)
         last = time(next_start.hour + DURATION, next_start.minute)
         if current_start >= last and current_end <= self.CLOSING_TIME:
             self.reservations.append(ap)
+            return True
         
-        return [r.t for r in self.reservations]
+        return False
+
+    def serve_client(self):
+        self.reservations.pop(0)
+
+    def draw_menu(self):
+        while True:
+            print([r.t for r in self.reservations])
+            print("*******************************")
+            print("BEAUTY SALON TOMMY")
+            print("(free facials)")
+            print("*******************************")
+            print("add reservation (1)")
+            print("serve a client (2)")
+            print("view client's file (3)")
+            inp = input(">>> ")
+            if not inp.isdigit(): continue
+
+            if int(inp) == 1:
+                t = input("Enter time of reservation: ")
+                t = t.split(", ")
+                t = list(map(int, t))
+                t = time(t[0], t[1])
+                treatment = inp("name of the service >>> ")
+                if treatment not in self.service_prices: 
+                    print("treatment not available")
+                    continue
+
+                if not self.add_reservation(t, treatment, self.service_prices[treatment],
+                                            random.choice(self.client_database)):
+                    print("reservation cannot be added at that time")
 
 """
 available services: hair care, nails, facial, hair removal(balding), kypane treatment
@@ -108,14 +146,7 @@ algorithm for creating a random client
 
 salon_manager = SalonManager()
 salon_manager.reservations = [Apointment(time(9, 0)), Apointment(time(10, 30)), Apointment(time(15, 0))]
-print([ap.t for ap in salon_manager.reservations])
-print(salon_manager.add_reservation(Apointment(time(8, 1))))
+# print([ap.t for ap in salon_manager.reservations])
+# print(salon_manager.add_reservation(Apointment(time(8, 1))))
 
-
-"""
-check idx = 0
-if idx <= ap: continue
-elif idx > ap:
-    if [idx - 1] + 1h <= ap: ok
-    if ap + 1h <= [idx]: ok 
-"""
+salon_manager.draw_menu()

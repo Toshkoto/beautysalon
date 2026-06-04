@@ -1,0 +1,252 @@
+[
+    {
+        "name": "Nate Higgerson",
+        "phone": "+359887102341",
+        "loyalty_points": 120
+    },
+    {
+        "name": "Olivia Smith",
+        "phone": "+359888203452",
+        "loyalty_points": 75
+    },
+    {
+        "name": "Sophia Brown",
+        "phone": "+359889304563",
+        "loyalty_points": 230
+    },
+    {
+        "name": "Isabella Davis",
+        "phone": "+359878405674",
+        "loyalty_points": 45
+    },
+    {
+        "name": "Mia Wilson",
+        "phone": "+359879506785",
+        "loyalty_points": 310
+    },
+    {
+        "name": "Charlotte Moore",
+        "phone": "+359887607896",
+        "loyalty_points": 90
+    },
+    {
+        "name": "Amelia Taylor",
+        "phone": "+359888708907",
+        "loyalty_points": 180
+    },
+    {
+        "name": "Harper Anderson",
+        "phone": "+359889809018",
+        "loyalty_points": 60
+    },
+    {
+        "name": "Evelyn Thomas",
+        "phone": "+359878910129",
+        "loyalty_points": 150
+    },
+    {
+        "name": "Abigail Jackson",
+        "phone": "+359879011230",
+        "loyalty_points": 20
+    },
+    {
+        "name": "Emily White",
+        "phone": "+359887112341",
+        "loyalty_points": 270
+    },
+    {
+        "name": "Ella Harris",
+        "phone": "+359888213452",
+        "loyalty_points": 95
+    },
+    {
+        "name": "Avery Martin",
+        "phone": "+359889314563",
+        "loyalty_points": 130
+    },
+    {
+        "name": "Scarlett Thompson",
+        "phone": "+359878415674",
+        "loyalty_points": 40
+    },
+    {
+        "name": "Grace Garcia",
+        "phone": "+359879516785",
+        "loyalty_points": 220
+    },
+    {
+        "name": "Chloe Martinez",
+        "phone": "+359887617896",
+        "loyalty_points": 170
+    },
+    {
+        "name": "Victoria Robinson",
+        "phone": "+359888718907",
+        "loyalty_points": 85
+    },
+    {
+        "name": "Riley Clark",
+        "phone": "+359889819018",
+        "loyalty_points": 55
+    },
+    {
+        "name": "Aria Rodriguez",
+        "phone": "+359878920129",
+        "loyalty_points": 300
+    },
+    {
+        "name": "Lily Lewis",
+        "phone": "+359879021230",
+        "loyalty_points": 140
+    },
+    {
+        "name": "Zoey Lee",
+        "phone": "+359887122341",
+        "loyalty_points": 200
+    },
+    {
+        "name": "Nora Walker",
+        "phone": "+359888223452",
+        "loyalty_points": 65
+    },
+    {
+        "name": "Hannah Hall",
+        "phone": "+359889324563",
+        "loyalty_points": 110
+    },
+    {
+        "name": "Layla Allen",
+        "phone": "+359878425674",
+        "loyalty_points": 250
+    },
+    {
+        "name": "Aurora Young",
+        "phone": "+359879526785",
+        "loyalty_points": 35
+    },
+    {
+        "name": "Savannah Hernandez",
+        "phone": "+359887627896",
+        "loyalty_points": 190
+    },
+    {
+        "name": "Brooklyn King",
+        "phone": "+359888728907",
+        "loyalty_points": 80
+    },
+    {
+        "name": "Bella Wright",
+        "phone": "+359889829018",
+        "loyalty_points": 145
+    },
+    {
+        "name": "Claire Lopez",
+        "phone": "+359878930129",
+        "loyalty_points": 15
+    },
+    {
+        "name": "Skylar Hill",
+        "phone": "+359879031230",
+        "loyalty_points": 275
+    },
+    {
+        "name": "Lucy Scott",
+        "phone": "+359887132341",
+        "loyalty_points": 50
+    },
+    {
+        "name": "Paisley Green",
+        "phone": "+359888233452",
+        "loyalty_points": 160
+    },
+    {
+        "name": "Everly Adams",
+        "phone": "+359889334563",
+        "loyalty_points": 105
+    },
+    {
+        "name": "Anna Baker",
+        "phone": "+359878435674",
+        "loyalty_points": 240
+    },
+    {
+        "name": "Caroline Nelson",
+        "phone": "+359879536785",
+        "loyalty_points": 70
+    },
+    {
+        "name": "Nova Carter",
+        "phone": "+359887637896",
+        "loyalty_points": 330
+    },
+    {
+        "name": "Genesis Mitchell",
+        "phone": "+359888738907",
+        "loyalty_points": 95
+    },
+    {
+        "name": "Emilia Perez",
+        "phone": "+359889839018",
+        "loyalty_points": 180
+    },
+    {
+        "name": "Kennedy Roberts",
+        "phone": "+359878940129",
+        "loyalty_points": 25
+    },
+    {
+        "name": "Samantha Turner",
+        "phone": "+359879041230",
+        "loyalty_points": 210
+    },
+    {
+        "name": "Maya Phillips",
+        "phone": "+359887142341",
+        "loyalty_points": 155
+    },
+    {
+        "name": "Willow Campbell",
+        "phone": "+359888243452",
+        "loyalty_points": 88
+    },
+    {
+        "name": "Kinsley Parker",
+        "phone": "+359889344563",
+        "loyalty_points": 265
+    },
+    {
+        "name": "Naomi Evans",
+        "phone": "+359878445674",
+        "loyalty_points": 48
+    },
+    {
+        "name": "Elena Edwards",
+        "phone": "+359879546785",
+        "loyalty_points": 120
+    },
+    {
+        "name": "Sarah Collins",
+        "phone": "+359887647896",
+        "loyalty_points": 175
+    },
+    {
+        "name": "Ariana Stewart",
+        "phone": "+359888748907",
+        "loyalty_points": 205
+    },
+    {
+        "name": "Allison Sanchez",
+        "phone": "+359889849018",
+        "loyalty_points": 60
+    },
+    {
+        "name": "Madelyn Morris",
+        "phone": "+359878950129",
+        "loyalty_points": 98
+    },
+    {
+        "name": "Ruby Rogers",
+        "phone": "+359879051230",
+        "loyalty_points": 145
+    }
+]

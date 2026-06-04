@@ -1,19 +1,33 @@
 from datetime import time
 
-
 class Client:
-    def __init__(self, name: str, phone: str, points: int) -> None:
-        self.name = name
-        self.phone = phone
-        self.points = points
+    def __init__(self, object: dict) -> None:
+        self.name: str = object["name"]
+        self.phone: str = object["phone"]
+        self.points: int = object["loyalty_points"]
         self.history: Stack[Apointment]
 
+    def get_obj(self) -> dict:
+        return {
+            "name": self.name,
+            "phone": self.phone,
+            "loyalty-points": self.points
+        }
+
 class Apointment:
-    def __init__(self, t: time, service_name: str, price: float, client: Client) -> None:
-        self.service_name = service_name
-        self.t = t
-        self.price = price
-        self.client = client
+    def __init__(self, object: dict) -> None:
+        self.treatment: str = object["treatment"]
+        self.t: time = time(object["t"][0], object["t"][1])
+        self.price: int = object["price"]
+        self.client: dict = object["client"]
+
+    def get_obj(self) -> dict:
+        return {
+            "treatment": self.treatment,
+            "t": self.t,
+            "price": self.price,
+            "client": self.client
+        }
 
 class DataStructure:
     def __init__(self) -> None:

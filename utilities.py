@@ -1,5 +1,8 @@
 from datetime import time
 
+def list_to_time(arr):
+    return time(arr[0], arr[1])
+
 class Client:
     def __init__(self, object: dict) -> None:
         self.name: str = object["name"]
@@ -24,7 +27,7 @@ class Apointment:
     def get_obj(self) -> dict:
         return {
             "treatment": self.treatment,
-            "t": self.t,
+            "t": (self.t.hour, self.t.minute),
             "price": self.price,
             "client": self.client
         }

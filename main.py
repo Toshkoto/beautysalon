@@ -6,7 +6,7 @@ class SalonManager:
     def __init__(self) -> None:
         self.OPENING_TIME = time(7, 0)
         self.CLOSING_TIME = time(17, 0)
-        self.non_ap_client: Queue[Client] # clienti bez chas 
+        self.non_ap_client: Queue[Client] # clienti bez chas
 
         self.service_prices = {
             "facial": 30,
@@ -21,20 +21,15 @@ class SalonManager:
 
         # pri wseki method kydeto se izpolzwa self.reservations trqbwa da se prochita nanowo za da e actualno 
 
-        """
-        TODO
-        dawa error line 32, pusni debugger i dobyrshi systemata
-        """
-
     def add_reservation(self, ap: Apointment) -> bool:
 
-        reserv = open("reservations.json", "w+")
-        self.reservations = json.load(reserv)
+        with open("reservations.json", "r") as reserv:
+            self.reservations = json.load(reserv)
 
         if not self.reservations:
-            reserv.append(ap)
-            reserv.write(json.dumps(reserv))
-            reserv.close()
+            self.reservations.append(ap.get_obj())
+            with open("reservations.json", "w") as reserv:
+                reserv.write(json.dumps(self.reservations))
             return True
 
         DURATION = 1
@@ -44,43 +39,57 @@ class SalonManager:
 
         if current_start < self.OPENING_TIME or current_end > self.CLOSING_TIME: return False
         if self.reservations is None:
-            self.reservations.append(ap)
+            self.reservations.append(ap.get_obj())
+            with open("reservations.json", "w") as reserv:
+                reserv.write(json.dumps(self.reservations))
             return True
         
         # insert reservation at the start (first)
-        if self.OPENING_TIME <= current_start and current_end <= self.reservations[0].t:
-            self.reservations.insert(0, ap)
+        if self.OPENING_TIME <= current_start and current_end <= list_to_time(self.reservations[0]['t']):
+            self.reservations.insert(0, ap.get_obj())
+            with open("reservations.json", "w") as reserv:
+                reserv.write(json.dumps(self.reservations))
             return True
         
+        next_start = list_to_time(self.reservations[-1]['t'])
         # try to insert somewhere in the middle
         for i in range(1, len(self.reservations)):
-            prev_end = time(self.reservations[i - 1].t.hour + DURATION, self.reservations[i - 1].t.minute)
-            next_start = self.reservations[i].t
+            prev_end = time(self.reservations[i - 1]['t'][0] + DURATION, self.reservations[i - 1]['t'][1])
+            next_start = list_to_time(self.reservations[i]['t'])
             
             if prev_end <= current_start and current_end <= next_start:
-                self.reservations.insert(i, ap)
+                self.reservations.insert(i, ap.get_obj())
+                with open("reservations.json", "w") as reserv:
+                    reserv.write(json.dumps(self.reservations))
                 return True
 
         # insert reservation at the end (last)
-        last = time(next_start.hour + DURATION, next_start.minute)
-        if current_start >= last and current_end <= self.CLOSING_TIME:
-            self.reservations.append(ap)
+        last_end = time(next_start.hour + DURATION, next_start.minute)
+        if current_start >= last_end and current_end <= self.CLOSING_TIME:
+            self.reservations.append(ap.get_obj())
+            with open("reservations.json", "w") as reserv:
+                reserv.write(json.dumps(self.reservations))
             return True
         
         return False
 
     def serve_client(self) -> Apointment:
+        with open("reservations.json", "r") as reserv:
+            self.reservations = json.load(reserv)
+
         if not self.reservations:
             print("There are no clients to serve")
             return
         
-        return self.reservations.pop(0)
-
-    def print_reservations(self) -> None:
-        print([r.t for r in self.reservations])
+        popped = self.reservations.pop(0)
+        with open("reservations.json", "w") as reserv:
+            reserv.write(json.dumps(self.reservations))
+        
+        return Apointment(popped)
 
     def draw_menu(self):
         while True:
+            print("\033[2J\033[H")
             print("*******************************")
             print("BEAUTY SALON TOMMY")
             print("(free facials)")
@@ -89,10 +98,13 @@ class SalonManager:
             print("serve a client (2)")
             print("view client's file (3)")
             print("view reservations (4)")
+            print("quit (q)")
             inp = input(">>> ")
+            if inp == 'q': return
             if not inp.isdigit(): continue
 
-            if int(inp) == 1:
+            inp = int(inp)
+            if inp == 1:
                 t = input("Enter time of reservation: ")
                 t = t.split(", ")
                 t = tuple(map(int, t))
@@ -110,26 +122,23 @@ class SalonManager:
                 }
                 if not self.add_reservation(Apointment(ap_data)):
                     print("reservation cannot be added at that time")
+                    input()
 
-                # self.print_reservations()
+            elif inp == 2:
+                # wizh lista otnosno shansowete da se padne smotan client.
+                # ako smotaniq client ima dosie s poweche tochki ot reservaciqta - obsluzhwame nego
+                print(self.serve_client())
+
+            elif inp == 4:
+                print(self.get_reservations())
+                input()
 
     def get_reservations(self) -> list:
-        return [r['t'] for r in self.reservations]
-
-
-"""
-f = open("reservations.json", "w+")
-reserv = json.load(f)
-
-"""
-
-"""
-available services: hair care, nails, facial, hair removal(balding), kypane treatment
-making an apointment
-new Apointment(facial, time(14, 30), 30, client)
-algorithm for creating a random client
-"""
+        with open("reservations.json", "r") as reserv:
+            self.reservations = json.load(reserv)
+            return [r['t'] for r in self.reservations]
 
 if __name__ == "__main__":
+    print(random.choice(["いらしゃいませ", "はじめして", "here comes a black guy"]))
     salon_manager = SalonManager()
     salon_manager.draw_menu()

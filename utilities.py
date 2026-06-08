@@ -1,7 +1,59 @@
 from datetime import time
+import pandas as pd
 
 def list_to_time(arr):
     return time(arr[0], arr[1])
+
+def read_clients_csv():
+    df = pd.read_csv('client_database.csv')
+    return df.to_dict('records')
+
+def read_reservations_csv():
+    df = pd.read_csv('reservations.csv')
+    reservations = []
+    for _, row in df.iterrows():
+        client_dict = {
+            "name": row['client_name'],
+            "phone": row['client_phone'],
+            "loyalty-points": int(row['client_loyalty_points'])
+        }
+        reservation_dict = {
+            "treatment": row['treatment'],
+            "t": (int(row['time_hour']), int(row['time_minute'])),
+            "price": int(row['price']),
+            "client": client_dict
+        }
+        reservations.append(reservation_dict)
+    return reservations
+
+def write_reservations_csv(reservations_list):
+    data = []
+    for r in reservations_list:
+        data.append({
+            'treatment': r['treatment'],
+            'time_hour': r['t'][0],
+            'time_minute': r['t'][1],
+            'price': r['price'],
+            'client_name': r['client']['name'],
+            'client_phone': r['client']['phone'],
+            'client_loyalty_points': r['client']['loyalty-points']
+        })
+    df = pd.DataFrame(data)
+    df.to_csv('reservations.csv', index=False)
+
+def append_reservation_csv(reservation):
+    df = pd.read_csv('reservations.csv')
+    new_row = {
+        'treatment': reservation['treatment'],
+        'time_hour': reservation['t'][0],
+        'time_minute': reservation['t'][1],
+        'price': reservation['price'],
+        'client_name': reservation['client']['name'],
+        'client_phone': reservation['client']['phone'],
+        'client_loyalty_points': reservation['client']['loyalty-points']
+    }
+    df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+    df.to_csv('reservations.csv', index=False)
 
 class Client:
     def __init__(self, object: dict) -> None:

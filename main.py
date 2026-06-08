@@ -1,6 +1,5 @@
 from utilities import *
 import random
-import json
 
 class SalonManager:
     def __init__(self) -> None:
@@ -16,20 +15,16 @@ class SalonManager:
             "showering": 19
         }
 
-        with open("client_database.json") as db:
-            self.client_db = json.load(db)
+        self.client_db = read_clients_csv()
 
         # pri wseki method kydeto se izpolzwa self.reservations trqbwa da se prochita nanowo za da e actualno 
 
     def add_reservation(self, ap: Apointment) -> bool:
 
-        with open("reservations.json", "r") as reserv:
-            self.reservations = json.load(reserv)
+        self.reservations = read_reservations_csv()
 
         if not self.reservations:
-            self.reservations.append(ap.get_obj())
-            with open("reservations.json", "w") as reserv:
-                reserv.write(json.dumps(self.reservations))
+            append_reservation_csv(ap.get_obj())
             return True
 
         DURATION = 1
@@ -39,16 +34,13 @@ class SalonManager:
 
         if current_start < self.OPENING_TIME or current_end > self.CLOSING_TIME: return False
         if self.reservations is None:
-            self.reservations.append(ap.get_obj())
-            with open("reservations.json", "w") as reserv:
-                reserv.write(json.dumps(self.reservations))
+            append_reservation_csv(ap.get_obj())
             return True
         
         # insert reservation at the start (first)
         if self.OPENING_TIME <= current_start and current_end <= list_to_time(self.reservations[0]['t']):
             self.reservations.insert(0, ap.get_obj())
-            with open("reservations.json", "w") as reserv:
-                reserv.write(json.dumps(self.reservations))
+            append_reservation_csv(ap.get_obj())
             return True
         
         next_start = list_to_time(self.reservations[-1]['t'])
@@ -59,31 +51,27 @@ class SalonManager:
             
             if prev_end <= current_start and current_end <= next_start:
                 self.reservations.insert(i, ap.get_obj())
-                with open("reservations.json", "w") as reserv:
-                    reserv.write(json.dumps(self.reservations))
+                append_reservation_csv(ap.get_obj())
                 return True
 
         # insert reservation at the end (last)
         last_end = time(next_start.hour + DURATION, next_start.minute)
         if current_start >= last_end and current_end <= self.CLOSING_TIME:
             self.reservations.append(ap.get_obj())
-            with open("reservations.json", "w") as reserv:
-                reserv.write(json.dumps(self.reservations))
+            append_reservation_csv(ap.get_obj())
             return True
         
         return False
 
     def serve_client(self) -> Apointment:
-        with open("reservations.json", "r") as reserv:
-            self.reservations = json.load(reserv)
+        self.reservations = read_reservations_csv()
 
         if not self.reservations:
             print("There are no clients to serve")
             return
         
         popped = self.reservations.pop(0)
-        with open("reservations.json", "w") as reserv:
-            reserv.write(json.dumps(self.reservations))
+        write_reservations_csv(self.reservations)
         
         return Apointment(popped)
 
@@ -131,14 +119,41 @@ class SalonManager:
 
             elif inp == 4:
                 print(self.get_reservations())
-                input()
+                print("expand? (y/n)")
+                inp = input(">>> ").lower()
 
-    def get_reservations(self) -> list:
-        with open("reservations.json", "r") as reserv:
-            self.reservations = json.load(reserv)
-            return [r['t'] for r in self.reservations]
+                if inp == 'y':
+                    self.expand_reservations()
+
+    def get_reservations(self):
+        self.reservations = read_reservations_csv()
+        return ["There are no reservations" if not self.reservations else r['t'] for r in self.reservations]
+    
+    def search(self, column: str, target: str):
+        reserv = pd.read_csv("reservations.csv")
+        print(reserv.loc[reserv[column] == target])
+        
+
+# ako ostane wreme - add reservation zapiswa samo imeto na klienta
+# tyrsim drugite mu danni w client_database
+
+    def expand_reservations(self):
+
+        print(pd.read_csv("reservations.csv"))
+        
+        print()
+        while True:
+            inp = input()
+            if inp != "search": break
+            search = input(">>> ")
+            search = search.split(" ")
+            if len(search) == 3:
+                search[1] = search[1] + " " + search[2]
+                search.pop()
+            self.search(search[0], search[1])
+
 
 if __name__ == "__main__":
-    print(random.choice(["いらしゃいませ", "はじめして", "here comes a black guy"]))
+    print(random.choice(["いらしゃいませ", "はじめまして", "here comes a black guy"]))
     salon_manager = SalonManager()
     salon_manager.draw_menu()

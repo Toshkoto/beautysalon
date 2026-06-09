@@ -1,14 +1,6 @@
 from utilities import *
 import random
 
-"""
-TODO:
-update the system:
-queue = only times
-the whole data -> self.reservation
-finish client_incoming method
-"""
-
 class SalonManager:
     def __init__(self) -> None:
         self.profit = 0
@@ -29,8 +21,6 @@ class SalonManager:
         }
 
         self.client_db = read_clients_csv()
-
-        # pri wseki method kydeto se izpolzwa self.reservations trqbwa da se prochita nanowo za da e actualno 
 
     def add_reservation(self, ap: Apointment) -> bool:
 
@@ -96,45 +86,6 @@ class SalonManager:
         
         return Apointment(popped)
 
-    """def client_incoming(self):
-        num = random.randrange(0, 101)
-        if num <= 50:
-            print("AHHHHHH A SMOTAN CLIENT HAS COME IN WITHOUT A RESERVATION")
-            client = Client(self.client_db[random.randrange(0, len(self.client_db))]).get_obj()
-            time = (random.randrange(self.OPENING_TIME.hour, self.CLOSING_TIME.hour), random.randrange(0, 60))
-            treatment = random.choice(list(self.service_prices.keys()))
-            ap_data = {
-                "t": time,
-                "treatment": treatment,
-                "price": self.service_prices[treatment],
-                "client": client
-            }
-
-            while True:
-                print(f"client: {client}")
-                print(f"treatment: {treatment}")
-                print(f"time: {time[0]}:{time[1]}")
-                print("serve him? (y/n)")
-                print("view reservations (3)")
-                inp = input(">>> ").lower()
-                if inp == 'y':
-                    print("client served")
-                    if
-                    input()
-                
-                if inp == 'n':
-                    print("client turned away")
-                    break
-
-                elif inp == '3':
-                    print(self.get_reservations())
-                    print("expand? (y/n)")
-                    inp = input(">>> ").lower()
-
-                    if inp == 'y':
-                        self.expand_reservations()
-"""
-    
     def draw_menu(self):
         while True:
             sort_reservations(self.reservations.items)

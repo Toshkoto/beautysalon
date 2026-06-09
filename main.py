@@ -1,11 +1,24 @@
 from utilities import *
 import random
 
+"""
+TODO:
+update the system:
+queue = only times
+the whole data -> self.reservation
+finish client_incoming method
+"""
+
 class SalonManager:
     def __init__(self) -> None:
+        self.profit = 0
         self.OPENING_TIME = time(7, 0)
         self.CLOSING_TIME = time(17, 0)
         self.history: Stack = Stack()
+        self.reservations = Queue(read_reservations_csv())
+        self.times: Queue = Queue([time(r['t'][0], r['t'][1]) for r in self.reservations.items])
+        print(self.reservations.items)
+        print(self.times.items)
 
         self.service_prices = {
             "facial": 30,
@@ -21,10 +34,10 @@ class SalonManager:
 
     def add_reservation(self, ap: Apointment) -> bool:
 
-        self.reservations = read_reservations_csv()
-
-        if not self.reservations:
-            append_reservation_csv(ap.get_obj())
+        if self.reservations.is_empty():
+            self.reservations.push(ap.get_obj())
+            write_reservations_csv(self.reservations.items)
+            self.times.push(ap.t)
             return True
 
         DURATION = 1
@@ -34,88 +47,99 @@ class SalonManager:
 
         if current_start < self.OPENING_TIME or current_end > self.CLOSING_TIME: return False
         if self.reservations is None:
-            append_reservation_csv(ap.get_obj())
+            self.reservations.push(ap.get_obj())
+            write_reservations_csv(self.reservations.items)
             return True
         
         # insert reservation at the start (first)
-        if self.OPENING_TIME <= current_start and current_end <= list_to_time(self.reservations[0]['t']):
-            self.reservations.insert(0, ap.get_obj())
-            append_reservation_csv(ap.get_obj())
+        if self.OPENING_TIME <= current_start and current_end <= list_to_time(self.reservations.items[0]['t']):
+            self.reservations.push(ap.get_obj())
+            write_reservations_csv(self.reservations.items)
             return True
         
-        next_start = list_to_time(self.reservations[-1]['t'])
+        next_start = list_to_time(self.reservations.items[-1]['t'])
         # try to insert somewhere in the middle
-        for i in range(1, len(self.reservations)):
-            prev_end = time(self.reservations[i - 1]['t'][0] + DURATION, self.reservations[i - 1]['t'][1])
-            next_start = list_to_time(self.reservations[i]['t'])
+        for i in range(1, len(self.reservations.items)):
+            prev_end = time(self.reservations.items[i - 1]['t'][0] + DURATION, self.reservations.items[i - 1]['t'][1])
+            next_start = list_to_time(self.reservations.items[i]['t'])
             
             if prev_end <= current_start and current_end <= next_start:
-                self.reservations.insert(i, ap.get_obj())
-                append_reservation_csv(ap.get_obj())
+                self.reservations.push(ap.get_obj())
+                write_reservations_csv(self.reservations.items)
                 return True
 
         # insert reservation at the end (last)
         last_end = time(next_start.hour + DURATION, next_start.minute)
         if current_start >= last_end and current_end <= self.CLOSING_TIME:
-            self.reservations.append(ap.get_obj())
-            append_reservation_csv(ap.get_obj())
+            self.reservations.push(ap.get_obj())
+            write_reservations_csv(self.reservations.items)
             return True
         
         return False
 
     def serve_client(self) -> Apointment:
-        self.reservations = read_reservations_csv()
 
-        if not self.reservations:
+        if self.reservations.is_empty():
             print("There are no clients to serve")
+            input()
             return
         
-        popped = self.reservations.pop(0)
-        write_reservations_csv(self.reservations)
+        popped = self.reservations.dequeue()
+        
+        if self.reservations.is_empty():
+            df = pd.DataFrame(columns=['treatment', 'time_hour', 'time_minute', 'price', 'client_name', 'client_phone', 'client_loyalty_points'])
+            df.to_csv('reservations.csv', index=False)
+        else:
+            write_reservations_csv(self.reservations.items)
+
+        self.profit += popped['price']
         
         return Apointment(popped)
 
-    # def client_incoming(self):
-    #     num = random.randrange(0, 101)
-    #     if num <= 50:
-    #         print("AHHHHHH A SMOTAN CLIENT HAS COME IN WITHOUT A RESERVATION")
-    #         client = Client(self.client_db[random.randrange(0, len(self.client_db))]).get_obj()
-    #         time = (random.randrange(self.OPENING_TIME.hour, self.CLOSING_TIME.hour), random.randrange(0, 60))
-    #         treatment = random.choice(list(self.service_prices.keys()))
-    #         ap_data = {
-    #             "t": time,
-    #             "treatment": treatment,
-    #             "price": self.service_prices[treatment],
-    #             "client": client
-    #         }
+    """def client_incoming(self):
+        num = random.randrange(0, 101)
+        if num <= 50:
+            print("AHHHHHH A SMOTAN CLIENT HAS COME IN WITHOUT A RESERVATION")
+            client = Client(self.client_db[random.randrange(0, len(self.client_db))]).get_obj()
+            time = (random.randrange(self.OPENING_TIME.hour, self.CLOSING_TIME.hour), random.randrange(0, 60))
+            treatment = random.choice(list(self.service_prices.keys()))
+            ap_data = {
+                "t": time,
+                "treatment": treatment,
+                "price": self.service_prices[treatment],
+                "client": client
+            }
 
-    #         while True:
-    #             print(f"client: {client}")
-    #             print(f"treatment: {treatment}")
-    #             print(f"time: {time[0]}:{time[1]}")
-    #             print("serve him? (y/n)")
-    #             print("view reservations (3)")
-    #             inp = input(">>> ").lower()
-    #             if inp == 'y':
-    #                 print("client served")
-    #                 if
-    #                 input()
+            while True:
+                print(f"client: {client}")
+                print(f"treatment: {treatment}")
+                print(f"time: {time[0]}:{time[1]}")
+                print("serve him? (y/n)")
+                print("view reservations (3)")
+                inp = input(">>> ").lower()
+                if inp == 'y':
+                    print("client served")
+                    if
+                    input()
                 
-    #             if inp == 'n':
-    #                 print("client turned away")
-    #                 break
+                if inp == 'n':
+                    print("client turned away")
+                    break
 
-    #             elif inp == '3':
-    #                 print(self.get_reservations())
-    #                 print("expand? (y/n)")
-    #                 inp = input(">>> ").lower()
+                elif inp == '3':
+                    print(self.get_reservations())
+                    print("expand? (y/n)")
+                    inp = input(">>> ").lower()
 
-    #                 if inp == 'y':
-    #                     self.expand_reservations()
-
+                    if inp == 'y':
+                        self.expand_reservations()
+"""
+    
     def draw_menu(self):
         while True:
+            sort_reservations(self.reservations.items)
             print("\033[2J\033[H")
+            print(random.choice(["いらしゃいませ", "はじめまして", "here comes a black guy", "Howdy"]))
             print("*******************************")
             print("BEAUTY SALON TOMMY")
             print("(free facials)")
@@ -123,13 +147,13 @@ class SalonManager:
             print("add reservation (1)")
             print("serve a client (2)")
             print("view reservations (3)")
+            print("view history (4)")
+            print("take profit (5)")
             print("quit (q)")
             inp = input(">>> ")
             if inp == 'q': return
             if not inp.isdigit(): continue
 
-            status = self.client_incoming()
-            if status == 1: continue
             inp = int(inp)
             if inp == 1:
                 t = input("Enter time of reservation: ")
@@ -154,35 +178,50 @@ class SalonManager:
                 self.history.push(f"adding reservation {ap_data}")
 
             elif inp == 2:
-                # wizh lista otnosno shansowete da se padne smotan client.
-                # ako smotaniq client ima dosie s poweche tochki ot reservaciqta - obsluzhwame nego
                 print(self.serve_client())
                 self.history.push("serving client")
 
             elif inp == 3:
                 print(self.get_reservations())
+                self.history.push("get_reservations command done")
                 print("expand? (y/n)")
                 inp = input(">>> ").lower()
 
                 if inp == 'y':
+                    self.history.push("reservation data expanded")
                     self.expand_reservations()
 
+            elif inp == 4:
+                print(self.history)
+                input()
+
+            elif inp == 5:
+                self.take_profit()
+                input()
+
     def get_reservations(self):
-        sort_reservations()
-        self.reservations = read_reservations_csv()
-        return ["There are no reservations" if not self.reservations else r['t'] for r in self.reservations]
+        return ["There are no reservations" if self.reservations.is_empty() else r['t'] for r in self.reservations.items]
     
     def search(self, column: str, target: str):
         reserv = pd.read_csv("reservations.csv")
         print(reserv.loc[reserv[str(column)] == str(target)])
-        
-
-# ako ostane wreme - add reservation zapiswa samo imeto na klienta
-# tyrsim drugite mu danni w client_database
+        self.history.push(f"searching through reservations: target = {str(target)}")
 
     def expand_reservations(self):
 
-        print(pd.read_csv("reservations.csv"))
+        data = []
+        for r in self.reservations.items:
+            data.append({
+                'treatment': r['treatment'],
+                'time_hour': r['t'][0],
+                'time_minute': r['t'][1],
+                'price': r['price'],
+                'client_name': r['client']['name'],
+                'client_phone': r['client']['phone'],
+                'client_loyalty_points': r['client']['loyalty-points']
+            })
+        df = pd.DataFrame(data)
+        print(df)
         
         print()
         while True:
@@ -195,8 +234,10 @@ class SalonManager:
                 search.pop()
             self.search(search[0], search[1])
 
+    def take_profit(self):
+        print(f"total profit so far: {self.profit}")
+        self.history.push("profit taken")
 
 if __name__ == "__main__":
-    print(random.choice(["いらしゃいませ", "はじめまして", "here comes a black guy", "Howdy"]))
     salon_manager = SalonManager()
     salon_manager.draw_menu()

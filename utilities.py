@@ -41,30 +41,15 @@ def write_reservations_csv(reservations_list):
     df = pd.DataFrame(data)
     df.to_csv('reservations.csv', index=False)
 
-def append_reservation_csv(reservation):
-    df = pd.read_csv('reservations.csv')
-    new_row = {
-        'treatment': reservation['treatment'],
-        'time_hour': reservation['t'][0],
-        'time_minute': reservation['t'][1],
-        'price': reservation['price'],
-        'client_name': reservation['client']['name'],
-        'client_phone': reservation['client']['phone'],
-        'client_loyalty_points': reservation['client']['loyalty-points']
-    }
-    df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
-    df.to_csv('reservations.csv', index=False)
+def sort_reservations(reservations):
+    for i in range(1, len(reservations)):
+        idx = i
+        current_value = reservations.pop(i)
+        for j in range(i-1, -1, -1):
+            if list_to_time(reservations[j]['t']) > list_to_time(current_value['t']):
+                idx = j
 
-def sort_reservations():
-    df = pd.read_csv('reservations.csv')
-    if df.empty:
-        return
-    if 'time_hour' in df.columns:
-        df['time_hour'] = df['time_hour'].astype(int)
-    if 'time_minute' in df.columns:
-        df['time_minute'] = df['time_minute'].astype(int)
-    df = df.sort_values(by=['time_hour', 'time_minute']).reset_index(drop=True)
-    df.to_csv('reservations.csv', index=False)
+        reservations.insert(idx, current_value)
 
 class Client:
     def __init__(self, object: dict) -> None:
@@ -96,36 +81,40 @@ class Apointment:
         }
 
 class DataStructure:
-    def __init__(self) -> None:
-        self.items: list[Client] = []
-        self.size = 0
+    def __init__(self, array) -> None:
+        self.items = array
+        self.size = len(self.items)
 
-    def add(self, items: Client) -> None:
-        self.items.append(items)
+    def push(self, item) -> None:
+        self.items.append(item)
         self.size += 1
 
     def is_empty(self) -> bool:
-        return self.size == 0
+        return not bool(self.items)
 
-    def peek(self) -> Client:
+    def peek(self):
         return self.items[len(self.items) - 1]
 
 class Stack(DataStructure):
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, array = []) -> None:
+        self.items = array
+        self.size = len(self.items)
 
     def __str__(self) -> str:
-        return f"Stack [top...bottom] {self.items[::-1]}"
+        return f"Stack [top...bottom]: {self.items[::-1]}"
 
-    def pop(self) -> Client:
+    def pop(self):
+        self.size -= 1
         return self.items.pop()
 
 class Queue(DataStructure):
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, array = []) -> None:
+        self.items = array
+        self.size = len(self.items)
 
     def __str__(self) -> str:
-        return f"Queue: [front...back] {self.items}"
+        return f"Queue: [front...back]: {self.items}"
 
-    def dequeue(self) -> Client:
+    def dequeue(self):
+        self.size -= 1
         return self.items.pop(0)

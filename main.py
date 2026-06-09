@@ -5,7 +5,7 @@ class SalonManager:
     def __init__(self) -> None:
         self.OPENING_TIME = time(7, 0)
         self.CLOSING_TIME = time(17, 0)
-        self.non_ap_client: Queue[Client] # clienti bez chas
+        self.history: Stack = Stack()
 
         self.service_prices = {
             "facial": 30,
@@ -75,6 +75,44 @@ class SalonManager:
         
         return Apointment(popped)
 
+    # def client_incoming(self):
+    #     num = random.randrange(0, 101)
+    #     if num <= 50:
+    #         print("AHHHHHH A SMOTAN CLIENT HAS COME IN WITHOUT A RESERVATION")
+    #         client = Client(self.client_db[random.randrange(0, len(self.client_db))]).get_obj()
+    #         time = (random.randrange(self.OPENING_TIME.hour, self.CLOSING_TIME.hour), random.randrange(0, 60))
+    #         treatment = random.choice(list(self.service_prices.keys()))
+    #         ap_data = {
+    #             "t": time,
+    #             "treatment": treatment,
+    #             "price": self.service_prices[treatment],
+    #             "client": client
+    #         }
+
+    #         while True:
+    #             print(f"client: {client}")
+    #             print(f"treatment: {treatment}")
+    #             print(f"time: {time[0]}:{time[1]}")
+    #             print("serve him? (y/n)")
+    #             print("view reservations (3)")
+    #             inp = input(">>> ").lower()
+    #             if inp == 'y':
+    #                 print("client served")
+    #                 if
+    #                 input()
+                
+    #             if inp == 'n':
+    #                 print("client turned away")
+    #                 break
+
+    #             elif inp == '3':
+    #                 print(self.get_reservations())
+    #                 print("expand? (y/n)")
+    #                 inp = input(">>> ").lower()
+
+    #                 if inp == 'y':
+    #                     self.expand_reservations()
+
     def draw_menu(self):
         while True:
             print("\033[2J\033[H")
@@ -84,13 +122,14 @@ class SalonManager:
             print("*******************************")
             print("add reservation (1)")
             print("serve a client (2)")
-            print("view client's file (3)")
-            print("view reservations (4)")
+            print("view reservations (3)")
             print("quit (q)")
             inp = input(">>> ")
             if inp == 'q': return
             if not inp.isdigit(): continue
 
+            status = self.client_incoming()
+            if status == 1: continue
             inp = int(inp)
             if inp == 1:
                 t = input("Enter time of reservation: ")
@@ -100,7 +139,7 @@ class SalonManager:
                 if treatment not in self.service_prices: 
                     print("treatment not available")
                     continue
-
+                
                 client = Client(self.client_db[random.randrange(0, len(self.client_db))])
                 ap_data = {
                     "t": t,
@@ -112,12 +151,15 @@ class SalonManager:
                     print("reservation cannot be added at that time")
                     input()
 
+                self.history.push(f"adding reservation {ap_data}")
+
             elif inp == 2:
                 # wizh lista otnosno shansowete da se padne smotan client.
                 # ako smotaniq client ima dosie s poweche tochki ot reservaciqta - obsluzhwame nego
                 print(self.serve_client())
+                self.history.push("serving client")
 
-            elif inp == 4:
+            elif inp == 3:
                 print(self.get_reservations())
                 print("expand? (y/n)")
                 inp = input(">>> ").lower()
@@ -126,12 +168,13 @@ class SalonManager:
                     self.expand_reservations()
 
     def get_reservations(self):
+        sort_reservations()
         self.reservations = read_reservations_csv()
         return ["There are no reservations" if not self.reservations else r['t'] for r in self.reservations]
     
     def search(self, column: str, target: str):
         reserv = pd.read_csv("reservations.csv")
-        print(reserv.loc[reserv[column] == target])
+        print(reserv.loc[reserv[str(column)] == str(target)])
         
 
 # ako ostane wreme - add reservation zapiswa samo imeto na klienta
@@ -154,6 +197,6 @@ class SalonManager:
 
 
 if __name__ == "__main__":
-    print(random.choice(["いらしゃいませ", "はじめまして", "here comes a black guy"]))
+    print(random.choice(["いらしゃいませ", "はじめまして", "here comes a black guy", "Howdy"]))
     salon_manager = SalonManager()
     salon_manager.draw_menu()

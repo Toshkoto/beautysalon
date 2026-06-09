@@ -55,6 +55,17 @@ def append_reservation_csv(reservation):
     df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
     df.to_csv('reservations.csv', index=False)
 
+def sort_reservations():
+    df = pd.read_csv('reservations.csv')
+    if df.empty:
+        return
+    if 'time_hour' in df.columns:
+        df['time_hour'] = df['time_hour'].astype(int)
+    if 'time_minute' in df.columns:
+        df['time_minute'] = df['time_minute'].astype(int)
+    df = df.sort_values(by=['time_hour', 'time_minute']).reset_index(drop=True)
+    df.to_csv('reservations.csv', index=False)
+
 class Client:
     def __init__(self, object: dict) -> None:
         self.name: str = object["name"]
